@@ -3,29 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA 5-Step Analyzer</title>
+    <title>DNA Scrolling Monitor</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #e0e0e0; padding: 15px; margin: 0; }
-        .container { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); border: 1px solid #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 10px; margin: 0; }
+        .container { max-width: 420px; margin: auto; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; }
         
-        .calc-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; background: #252525; padding: 10px; border-radius: 12px; }
-        input { width: 85%; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #121212; color: #00ff88; font-weight: bold; text-align: center; }
-        .profit-text { grid-column: span 2; color: #ffcc00; font-size: 0.9em; text-align: center; margin-top: 5px; }
+        /* Input & Profit Area */
+        .calc-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; background: #252525; padding: 10px; border-radius: 10px; font-size: 0.85em; }
+        input { width: 80%; padding: 6px; border-radius: 4px; border: none; background: #000; color: #00ff88; text-align: center; font-weight: bold; font-size: 1.1em; }
+        .profit-info { grid-column: span 2; text-align: center; color: #ffcc00; margin-top: 5px; }
 
-        .history-row { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-family: monospace; font-size: 1.2em; color: #fff; overflow-x: auto; white-space: nowrap; min-height: 24px; border: 1px solid #444; }
+        /* History Belt */
+        .history-row { background: #000; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-family: 'Courier New', monospace; font-size: 1.2em; color: #fff; overflow-x: auto; white-space: nowrap; border: 1px solid #444; letter-spacing: 3px; display: flex; flex-direction: row-reverse; justify-content: flex-end; }
         
-        .main-btns { display: grid; grid-template-columns: 2fr 2fr 1.2fr 1.2fr; gap: 8px; margin-bottom: 20px; }
-        button { border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.15s; color: white; }
-        .btn-p { background: #0062ff; height: 60px; font-size: 1.5em; }
-        .btn-b { background: #e62e2e; height: 60px; font-size: 1.5em; }
-        .btn-action { background: #444; font-size: 0.85em; }
-        button:active { transform: scale(0.9); }
+        /* Control Buttons */
+        .main-btns { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 6px; margin-bottom: 15px; }
+        button { border: none; border-radius: 10px; cursor: pointer; font-weight: bold; color: white; transition: 0.1s; }
+        .btn-p { background: #0062ff; height: 60px; font-size: 1.6em; box-shadow: 0 4px #0046b3; }
+        .btn-b { background: #e62e2e; height: 60px; font-size: 1.6em; box-shadow: 0 4px #b31a1a; }
+        .btn-action { background: #444; font-size: 0.8em; }
+        button:active { transform: translateY(2px); box-shadow: none; }
 
-        .dna-card { background: #2a2a2a; margin-bottom: 12px; padding: 15px; border-radius: 15px; border-left: 6px solid #555; }
-        .dna-header { display: flex; justify-content: space-between; align-items: center; }
-        .dna-name { font-size: 0.8em; color: #aaa; text-transform: uppercase; }
-        .dna-next { font-size: 1.8em; font-weight: bold; }
-        .auto-check { color: #888; letter-spacing: 3px; font-size: 1.1em; margin-top: 8px; border-top: 1px solid #3d3d3d; padding-top: 8px; }
+        /* DNA Analysis Cards */
+        .dna-card { background: #262626; margin-bottom: 6px; padding: 8px 12px; border-radius: 10px; border-left: 5px solid #555; }
+        .dna-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .dna-name { font-size: 0.75em; color: #888; font-weight: bold; }
+        .win-rate { font-size: 0.85em; color: #00ff88; }
+        .dna-next { font-size: 1.6em; font-weight: bold; }
+
+        /* Scrolling Symbols Row */
+        .auto-check-container { overflow: hidden; width: 100%; border-top: 1px solid #333; padding-top: 5px; }
+        .auto-check { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 2px; font-size: 1.1em; white-space: nowrap; }
 
         #msg { text-align: center; color: #ff4444; font-size: 1em; margin: 20px 0; font-weight: bold; }
     </style>
@@ -34,12 +42,15 @@
 
 <div class="container">
     <div class="calc-box">
-        <div><small>ทุน</small><br><input type="number" id="cap" value="1000" oninput="updateMoney()"></div>
-        <div><small>กำไร (%)</small><br><input type="number" id="pct" value="5" oninput="updateMoney()"></div>
-        <div class="profit-text">เป้าหมาย: <span id="m-profit">50</span> | รวมทุน: <span id="m-total">1050</span></div>
+        <div>ทุน<br><input type="number" id="cap" value="1000" oninput="updateMoney()"></div>
+        <div>กำไร %<br><input type="number" id="pct" value="5" oninput="updateMoney()"></div>
+        <div class="profit-info">
+            เป้ากำไร: <span id="m-profit">50</span> | รวม: <span id="m-total">1050</span>
+        </div>
     </div>
 
-    <div class="history-row" id="view-hist">-</div>
+    <!-- แถวสถิติล่าสุดจะอยู่ซ้ายสุดเสมอ -->
+    <div class="history-row" id="view-hist"></div>
 
     <div class="main-btns">
         <button class="btn-p" onclick="add('P')">P</button>
@@ -48,79 +59,43 @@
         <button class="btn-action" onclick="reset()">Reset</button>
     </div>
 
-    <div id="msg">กรุณาป้อนข้อมูล 5 ตาแรก</div>
-
-    <div id="dna-list" style="display:none;">
-        <div class="dna-card" style="border-left-color: #00ff88;">
-            <div class="dna-header">
-                <span class="dna-name">Set 1: Ping Pong</span>
-                <span class="dna-next" id="v1">-</span>
-            </div>
-            <div class="auto-check" id="check1"></div>
-        </div>
-
-        <div class="dna-card" style="border-left-color: #00ccff;">
-            <div class="dna-header">
-                <span class="dna-name">Set 2: Follow Me</span>
-                <span class="dna-next" id="v2">-</span>
-            </div>
-            <div class="auto-check" id="check2"></div>
-        </div>
-
-        <div class="dna-card" style="border-left-color: #ffcc00;">
-            <div class="dna-header">
-                <span class="dna-name">Set 3: Twin Double</span>
-                <span class="dna-next" id="v3">-</span>
-            </div>
-            <div class="auto-check" id="check3"></div>
-        </div>
-    </div>
+    <div id="msg">กรุณากรอกข้อมูลให้ครบ 10 ตา</div>
+    <div id="dna-list" style="display:none;"></div>
 </div>
 
 <script>
     let history = [];
-    const minStart = 5;
+    const minStart = 10;
 
-    const patterns = [
-        { name: "Ping Pong", fn: (h) => h[h.length-1] === 'P' ? 'B' : 'P' },
-        { name: "Follow", fn: (h) => h[h.length-1] },
-        { name: "Twin", fn: (h) => {
-            if (h.length < 2) return h[h.length-1];
-            let last2 = h.slice(-2).join('');
-            if (last2 === "PP") return "BB"; // ไม่ใช้ logic ซับซ้อนเพื่อให้แสดงตัวเดียว
-            return h[h.length-1] === 'P' ? 'B' : 'P';
-        }}
+    const fixedLogic = [
+        { name: "SET 1: FLOW", logic: (h) => h[h.length-1] },
+        { name: "SET 2: SWING", logic: (h) => h[h.length-1] === 'P' ? 'B' : 'P' },
+        { name: "SET 3: DOUBLE-CUT", logic: (h) => (h.length >= 2 && h[h.length-1] === h[h.length-2]) ? (h[h.length-1] === 'P' ? 'B' : 'P') : h[h.length-1] },
+        { name: "SET 4: TRIPLE-B", logic: (h) => (h.slice(-3).every(x => x === 'P')) ? 'B' : (h.slice(-3).every(x => x === 'B') ? 'P' : h[h.length-1]) },
+        { name: "SET 5: SMART-RAND", logic: (h) => (h.length % 3 === 0) ? 'P' : 'B' }
     ];
 
     function updateMoney() {
         let c = parseFloat(document.getElementById('cap').value) || 0;
         let p = parseFloat(document.getElementById('pct').value) || 0;
-        document.getElementById('m-profit').innerText = ((c * p) / 100).toLocaleString();
-        document.getElementById('m-total').innerText = (c + (c * p / 100)).toLocaleString();
+        let pf = (c * p) / 100;
+        document.getElementById('m-profit').innerText = pf.toLocaleString();
+        document.getElementById('m-total').innerText = (c + pf).toLocaleString();
     }
 
-    function add(val) {
-        history.push(val);
-        updateUI();
-    }
-
-    function undo() {
-        history.pop();
-        updateUI();
-    }
-
-    function reset() {
-        history = [];
-        updateUI();
-    }
+    function add(val) { history.push(val); updateUI(); }
+    function undo() { history.pop(); updateUI(); }
+    function reset() { history = []; updateUI(); }
 
     function updateUI() {
-        document.getElementById('view-hist').innerText = history.length > 0 ? history.join(' ') : "-";
-        
+        // อัปเดตแถวประวัติแบบเลื่อน (ตัวล่าสุดอยู่ซ้าย)
+        const histEl = document.getElementById('view-hist');
+        histEl.innerText = [...history].reverse().join(' ');
+
         if (history.length >= minStart) {
             document.getElementById('msg').style.display = 'none';
             document.getElementById('dna-list').style.display = 'block';
-            processLogic();
+            renderDNA();
         } else {
             document.getElementById('msg').style.display = 'block';
             document.getElementById('msg').innerText = `รอข้อมูลอีก ${minStart - history.length} ตา...`;
@@ -128,25 +103,46 @@
         }
     }
 
-    function processLogic() {
-        patterns.forEach((p, i) => {
-            let idx = i + 1;
-            let checkIcons = "";
+    function renderDNA() {
+        let html = '';
+        fixedLogic.forEach((dna, i) => {
+            let checkIcons = [];
+            let wins = 0;
+            let trials = 0;
 
-            // ตรวจสอบความแม่นยำอัตโนมัติ (นับตั้งแต่ตาที่ 5 เป็นต้นไป)
-            for (let j = minStart; j < history.length; j++) {
-                let prevH = history.slice(0, j);
-                let predicted = p.fn(prevH).charAt(0); // เอาตัวแรกกรณีลูกคู่
-                checkIcons += (predicted === history[j]) ? "✅" : "❌";
+            // คำนวณประวัติ ✅/❌
+            for (let j = 1; j < history.length; j++) {
+                let predicted = dna.logic(history.slice(0, j));
+                let isWin = (predicted === history[j]);
+                if (j >= 1) { // บันทึกสถิติตั้งแต่เริ่ม
+                    checkIcons.push(isWin ? "✅" : "❌");
+                    if (isWin) wins++;
+                    trials++;
+                }
             }
-            
-            document.getElementById(`check${idx}`).innerText = checkIcons.slice(-12); // โชว์ล่าสุด 12 ตัว
 
-            let next = p.fn(history).charAt(0);
-            let vEl = document.getElementById(`v${idx}`);
-            vEl.innerText = next;
-            vEl.style.color = (next === 'P') ? '#0062ff' : '#e62e2e';
+            let next = dna.logic(history);
+            let rate = trials > 0 ? Math.round((wins / trials) * 100) : 0;
+            let nextColor = (next === 'P') ? '#0062ff' : '#e62e2e';
+            
+            // กลับด้าน Array เพื่อให้ตัวล่าสุดอยู่ซ้ายสุด (Scrolling effect)
+            let scrollingIcons = checkIcons.reverse().join('');
+
+            html += `
+                <div class="dna-card">
+                    <div class="dna-header">
+                        <div>
+                            <span class="dna-name">${dna.name}</span><br>
+                            <span class="win-rate">Win: ${rate}%</span>
+                        </div>
+                        <span class="dna-next" style="color: ${nextColor}">${next}</span>
+                    </div>
+                    <div class="auto-check-container">
+                        <div class="auto-check">${scrollingIcons}</div>
+                    </div>
+                </div>`;
         });
+        document.getElementById('dna-list').innerHTML = html;
     }
 
     updateMoney();
