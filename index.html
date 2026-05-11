@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA TARGET PRO - BLINK MODE</title>
+    <title>DNA TARGET - WIDE VIEW</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #050505; color: #e0e0e0; padding: 10px; margin: 0; }
         .container { max-width: 420px; margin: auto; background: #151515; padding: 12px; border-radius: 15px; border: 1px solid #333; }
         
-        /* ช่องกรอกข้อมูล */
+        /* แถวกรอกข้อมูล */
         .input-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 5px; margin-bottom: 12px; background: #222; padding: 8px; border-radius: 8px; }
         .input-group { display: flex; flex-direction: column; }
         label { font-size: 0.7em; color: #888; margin-bottom: 2px; text-align: center; }
         input { width: 100%; padding: 8px 0; border-radius: 4px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-weight: bold; font-size: 1.1em; box-sizing: border-box; }
 
-        /* แสดงเป้าหมายกระพริบ */
+        /* เป้าหมายกระพริบ */
         @keyframes blink-win { 0%, 100% { opacity: 1; text-shadow: 0 0 15px #00ff88; } 50% { opacity: 0.4; } }
         @keyframes blink-loss { 0%, 100% { opacity: 1; text-shadow: 0 0 15px #ff4444; } 50% { opacity: 0.4; } }
 
@@ -22,28 +22,29 @@
         .goal-item { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
         .goal-divider { width: 1px; background: #333; margin: 0 5px; }
 
-        /* กรอบตัวบนที่กระพริบ */
         .top-box { border: 1px solid #333; border-radius: 8px; padding: 8px 2px; background: #0a0a0a; margin-bottom: 8px; }
         .win-blink { color: #00ff88; font-weight: bold; font-size: 1.8em; animation: blink-win 1.2s infinite; }
         .loss-blink { color: #ff4444; font-weight: bold; font-size: 1.8em; animation: blink-loss 1.2s infinite; }
-
-        /* ตัวล่างนิ่งๆ */
         .bottom-txt { font-size: 0.85em; color: #aaa; margin-top: 2px; }
         .label-txt { font-size: 0.65em; color: #666; margin-bottom: 2px; }
 
+        /* ประวัติการออก */
         .history-row { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-family: monospace; font-size: 1.4em; color: #fff; overflow-x: auto; white-space: nowrap; border: 1px solid #444; letter-spacing: 5px; display: flex; flex-direction: row-reverse; min-height: 30px;}
 
+        /* ปุ่มหลัก */
         .main-btns { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 8px; margin-bottom: 12px; }
         button { border: none; border-radius: 10px; cursor: pointer; font-weight: bold; color: white; }
         .btn-p { background: #0062ff; height: 60px; font-size: 2em; box-shadow: 0 4px #0046b3; }
         .btn-b { background: #e62e2e; height: 60px; font-size: 2em; box-shadow: 0 4px #b31a1a; }
         .btn-undo { background: #444; height: 60px; }
-        .btn-clear { background: #85144b; width: 100%; padding: 12px; border-radius: 10px; margin-bottom: 15px; }
+        .btn-clear { background: #85144b; width: 100%; padding: 10px; border-radius: 10px; font-size: 1em; margin-bottom: 15px; }
 
-        .dna-card { background: #1e1e1e; margin-bottom: 5px; padding: 5px 12px; border-radius: 8px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
-        .dna-info { display: flex; align-items: center; gap: 12px; min-width: 85px; }
-        .dna-next { font-size: 1.8em; font-weight: bold; width: 28px; text-align: center; }
-        .auto-check { display: flex; overflow-x: auto; gap: 5px; font-size: 1.2em; direction: rtl; flex-grow: 1; margin-left: 12px; border-left: 1px solid #333; padding-left: 10px; }
+        /* DNA ย่อส่วนแบบใหม่ (ลบชื่อเซ็ตออก) */
+        .dna-card { background: #1e1e1e; margin-bottom: 4px; padding: 3px 10px; border-radius: 6px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+        .dna-next { font-size: 1.8em; font-weight: bold; width: 35px; text-align: center; border-right: 1px solid #333; padding-right: 10px; margin-right: 5px; }
+        .auto-check { display: flex; overflow-x: auto; gap: 4px; font-size: 1.1em; direction: rtl; flex-grow: 1; }
+        .auto-check span { min-width: 16px; }
+
         #msg { text-align: center; color: #ffcc00; margin: 15px 0; font-weight: bold; }
     </style>
 </head>
@@ -57,23 +58,15 @@
     </div>
 
     <div class="goal-display">
-        <!-- ฝั่งกำไร -->
         <div class="goal-item">
             <div class="label-txt">เป้าหมายยอดถอน</div>
-            <div class="top-box">
-                <div id="win-total" class="win-blink">11,000</div>
-            </div>
+            <div class="top-box"><div id="win-total" class="win-blink">11,000</div></div>
             <div class="bottom-txt">กำไร: +<span id="win-goal">1,000</span></div>
         </div>
-        
         <div class="goal-divider"></div>
-
-        <!-- ฝั่งขาดทุน -->
         <div class="goal-item">
             <div class="label-txt">ลิมิตยอดหยุด</div>
-            <div class="top-box">
-                <div id="loss-total" class="loss-blink">8,000</div>
-            </div>
+            <div class="top-box"><div id="loss-total" class="loss-blink">8,000</div></div>
             <div class="bottom-txt">เสียได้: -<span id="loss-goal">2,000</span></div>
         </div>
     </div>
@@ -94,37 +87,23 @@
 
 <script>
     let rawHistory = [];
-    const dnaIds = [7, 14, 21, 28, 35];
+    const dnaStrategies = [0, 1, 2, 3, 4]; // 5 รูปแบบ
 
     function updateGoals() {
         let cap = parseFloat(document.getElementById('cap').value) || 0;
         let pWin = parseFloat(document.getElementById('pct_win').value) || 0;
         let pLoss = parseFloat(document.getElementById('pct_loss').value) || 0;
-        
         let winAmt = Math.floor((cap * pWin) / 100);
         let lossAmt = Math.floor((cap * pLoss) / 100);
-
         document.getElementById('win-total').innerText = (cap + winAmt).toLocaleString();
         document.getElementById('win-goal').innerText = winAmt.toLocaleString();
-        
         document.getElementById('loss-total').innerText = (cap - lossAmt).toLocaleString();
         document.getElementById('loss-goal').innerText = lossAmt.toLocaleString();
     }
 
-    function add(val) {
-        rawHistory.push(val);
-        updateUI();
-    }
-
-    function undo() {
-        rawHistory.pop();
-        updateUI();
-    }
-
-    function clearData() {
-        rawHistory = [];
-        updateUI();
-    }
+    function add(val) { rawHistory.push(val); updateUI(); }
+    function undo() { rawHistory.pop(); updateUI(); }
+    function clearData() { rawHistory = []; updateUI(); }
 
     function getPredict(h, id) {
         if (h.length < 1) return '-';
@@ -140,14 +119,14 @@
             renderDNA();
         } else {
             document.getElementById('msg').style.display = 'block';
-            document.getElementById('msg').innerText = `รอข้อมูลสถิติอีก ${10 - rawHistory.length} ตา...`;
+            document.getElementById('msg').innerText = `รอข้อมูลอีก ${10 - rawHistory.length} ตา...`;
             document.getElementById('dna-list').innerHTML = '';
         }
     }
 
     function renderDNA() {
         let html = '';
-        dnaIds.forEach((id) => {
+        dnaStrategies.forEach((id) => {
             let icons = [];
             for (let j = 1; j < rawHistory.length; j++) {
                 icons.push(getPredict(rawHistory.slice(0, j), id) === rawHistory[j] ? "✅" : "❌");
@@ -155,16 +134,12 @@
             let next = getPredict(rawHistory, id);
             html += `
                 <div class="dna-card">
-                    <div class="dna-info">
-                        <span style="font-size:0.6em; color:#555;">SET #${id}</span>
-                        <span class="dna-next" style="color:${next === 'P' ? '#0062ff' : '#e62e2e'}">${next}</span>
-                    </div>
+                    <div class="dna-next" style="color:${next === 'P' ? '#0062ff' : '#e62e2e'}">${next}</div>
                     <div class="auto-check">${icons.reverse().map(i => `<span>${i}</span>`).join('')}</div>
                 </div>`;
         });
         document.getElementById('dna-list').innerHTML = html;
     }
-
     updateGoals();
 </script>
 
