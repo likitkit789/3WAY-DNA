@@ -3,45 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA Solo Guard - Max Space</title>
+    <title>DNA Winner - Pure Tie Profit</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #050505; color: #e0e0e0; padding: 10px; margin: 0; }
         .container { max-width: 400px; margin: auto; background: #151515; padding: 15px; border-radius: 15px; border: 1px solid #333; }
         
-        /* Box ด้านบน */
+        /* Financial Settings */
         .calc-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; background: #222; padding: 10px; border-radius: 10px; border: 1px solid #444; }
         input { width: 85%; padding: 6px; border-radius: 5px; border: none; background: #000; color: #00ff88; text-align: center; font-weight: bold; font-size: 1.1em; }
         .money-row { grid-column: span 2; display: flex; justify-content: space-between; font-size: 0.9em; padding-top: 5px; border-top: 1px solid #333; }
 
-        /* การเดินเงิน */
+        /* Betting Info */
         .bet-label { text-align: center; background: #000; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 2px solid #ffcc00; }
-        .bet-val { font-size: 1.8em; color: #ffcc00; font-weight: bold; }
+        .bet-val { font-size: 1.6em; color: #ffcc00; font-weight: bold; }
+        .tie-val { font-size: 0.9em; color: #00ff88; font-weight: bold; }
 
-        /* แถวสถิติ */
+        /* History */
         .history-row { background: #000; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-family: monospace; font-size: 1.4em; color: #fff; overflow-x: auto; white-space: nowrap; border: 1px solid #444; letter-spacing: 4px; display: flex; flex-direction: row-reverse; }
 
-        /* ปุ่มกด */
-        .main-btns { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .reset-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 15px; }
+        /* Control Buttons */
+        .main-btns { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+        .reset-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 15px; }
         button { border: none; border-radius: 10px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-p { background: #0062ff; height: 65px; font-size: 1.8em; box-shadow: 0 4px #0046b3; }
-        .btn-b { background: #e62e2e; height: 65px; font-size: 1.8em; box-shadow: 0 4px #b31a1a; }
+        .btn-p { background: #0062ff; height: 60px; font-size: 1.8em; box-shadow: 0 4px #0046b3; }
+        .btn-b { background: #e62e2e; height: 60px; font-size: 1.8em; box-shadow: 0 4px #b31a1a; }
+        .btn-t { background: #28a745; height: 60px; font-size: 1.8em; box-shadow: 0 4px #1e7e34; }
         .btn-action { background: #444; font-size: 0.85em; }
         .btn-reset { background: #555; font-size: 0.75em; padding: 10px 0; }
 
-        /* DNA แถวเดียว */
-        .dna-card { background: #1b3d2f; padding: 15px; border-radius: 12px; border: 2px solid #00ff88; box-shadow: 0 0 20px rgba(0,255,136,0.1); }
-        .dna-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        /* DNA Display */
+        .dna-card { background: #1b3d2f; padding: 15px; border-radius: 12px; border: 2px solid #00ff88; }
+        .dna-header { display: flex; justify-content: space-between; align-items: center; }
         .dna-next { font-size: 3em; font-weight: bold; }
         .auto-check { display: flex; overflow-x: auto; gap: 5px; font-size: 1.2em; border-top: 1px solid #333; padding-top: 10px; direction: rtl; }
 
-        /* แจ้งเตือนเป้าหมาย */
+        /* Status Alert */
         @keyframes blink { 0%, 100% {opacity: 1;} 50% {opacity: 0.2;} }
-        .alert-box { margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 1.1em; line-height: 1.5; }
-        .win-target { background: rgba(0,255,136,0.1); border: 2px solid #00ff88; color: #00ff88; animation: blink 1s infinite; }
-        .loss-target { background: rgba(255,68,68,0.1); border: 2px solid #ff4444; color: #ff4444; animation: blink 0.6s infinite; }
-
-        #msg { text-align: center; color: #ffcc00; margin: 20px 0; font-weight: bold; }
+        .alert-box { margin-top: 10px; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; animation: blink 1s infinite; }
+        .win-target { border: 2px solid #00ff88; color: #00ff88; background: rgba(0,255,136,0.1); }
+        .loss-target { border: 2px solid #ff4444; color: #ff4444; background: rgba(255,68,68,0.1); }
     </style>
 </head>
 <body>
@@ -49,18 +49,19 @@
 <div class="container">
     <div class="calc-box">
         <div>ทุน<br><input type="number" id="cap" value="1000" oninput="calc()"></div>
-        <div>ชิพเริ่มต้น<br><input type="number" id="chip" value="50" oninput="calc()"></div>
+        <div>ชิพหลัก<br><input type="number" id="chip" value="50" oninput="calc()"></div>
         <div>กำไร %<br><input type="number" id="p_target" value="10" oninput="calc()"></div>
         <div>ขาดทุน %<br><input type="number" id="l_target" value="20" oninput="calc()"></div>
         <div class="money-row">
-            <span>กำไรสะสม: <b id="cur_profit" style="color:#00ff88">0</b></span>
-            <span>เงินปัจจุบัน: <b id="cur_total">1000</b></span>
+            <span>กำไรสุทธิ: <b id="cur_profit" style="color:#00ff88">0</b></span>
+            <span>เงินรวม: <b id="cur_total">1000</b></span>
         </div>
     </div>
 
     <div class="bet-label">
-        <small style="color:#aaa;">ตาถัดไปแนะนำวาง</small><br>
-        <span class="bet-val" id="next_bet">50</span>
+        <span class="bet-val" id="next_bet">50</span> 
+        <span class="tie-val">+ เสมอ 50</span><br>
+        <small style="color:#aaa;">รวมยอดวาง: <span id="total_bet">100</span></small>
     </div>
 
     <div class="history-row" id="view-hist"></div>
@@ -68,121 +69,133 @@
     <div class="main-btns">
         <button class="btn-p" onclick="add('P')">P</button>
         <button class="btn-b" onclick="add('B')">B</button>
+        <button class="btn-t" onclick="add('T')">T</button>
         <button class="btn-action" onclick="undo()">Undo</button>
-        <button class="btn-action" onclick="resetAll()">Clear</button>
+        <button class="btn-action" style="background:#85144b" onclick="resetAll()">Clear</button>
     </div>
 
     <div class="reset-btns">
         <button class="btn-reset" onclick="resetData()">ล้างสถิติ</button>
-        <button class="btn-reset" onclick="resetMoney()">ล้างการเงิน</button>
-        <button class="btn-reset" style="background:#85144b" onclick="resetAll()">ล้างทั้งหมด</button>
+        <button class="btn-reset" onclick="resetMoney()">ล้างเดินเงิน</button>
+        <button class="btn-reset" onclick="resetAll()">ล้างทั้งหมด</button>
     </div>
 
     <div id="status-msg"></div>
-    <div id="msg">รอข้อมูลอีก 10 ตา...</div>
     <div id="dna-solo"></div>
 </div>
 
 <script>
-    let history = [];
+    let rawHistory = [];
+    let dnaHistory = [];
     let bestId = null;
     let currentProfit = 0;
     let isLastWin = false;
+    const TIE_BET = 50;
 
     function getPredict(h, id) {
-        if (!h.length) return 'P';
-        let seed = (id * 13) % 4;
-        if (seed === 0) return h[h.length-1];
-        if (seed === 1) return h[h.length-1] === 'P' ? 'B' : 'P';
-        if (seed === 2) return h[h.length-2] || 'B';
-        return (id % 2 === 0) ? 'P' : 'B';
+        if (h.length < 2) return 'P';
+        const last = h[h.length-1];
+        if (id % 2 === 0) return last;
+        return last === 'P' ? 'B' : 'P';
     }
 
     function calc() {
         let cap = parseFloat(document.getElementById('cap').value) || 0;
         let chip = parseFloat(document.getElementById('chip').value) || 0;
+        let mainBet = isLastWin ? chip * 2 : chip;
         let pGoal = (cap * parseFloat(document.getElementById('p_target').value)) / 100;
         let lGoal = -(cap * parseFloat(document.getElementById('l_target').value)) / 100;
 
-        document.getElementById('cur_profit').innerText = currentProfit.toLocaleString();
-        document.getElementById('cur_total').innerText = (cap + currentProfit).toLocaleString();
-        document.getElementById('next_bet').innerText = (isLastWin ? chip * 2 : chip).toLocaleString();
+        document.getElementById('cur_profit').innerText = Math.floor(currentProfit).toLocaleString();
+        document.getElementById('cur_total').innerText = Math.floor(cap + currentProfit).toLocaleString();
+        document.getElementById('next_bet').innerText = mainBet.toLocaleString();
+        document.getElementById('total_bet').innerText = (mainBet + TIE_BET).toLocaleString();
 
         const s = document.getElementById('status-msg');
         s.innerHTML = '';
-        
         if (currentProfit >= pGoal && pGoal > 0) {
-            s.innerHTML = `<div class="alert-box win-target">บวก +${currentProfit} ตามเป้า!<br>ยินดีด้วยครับ พอเถอะ ไปใช้เงินบ้าง</div>`;
+            s.innerHTML = `<div class="alert-box win-target">บวก +${Math.floor(currentProfit)} ถึงเป้า!<br>ยินดีด้วยครับ พักผ่อนและถอนเงินได้เลย</div>`;
         } else if (currentProfit <= lGoal && lGoal < 0) {
-            s.innerHTML = `<div class="alert-box loss-target">ลบ ${currentProfit} เกินลิมิต!<br>หยุดเดี๋ยวนี้! อย่าฝืน ชีวิตจะพัง</div>`;
+            s.innerHTML = `<div class="alert-box loss-target">ลบ ${Math.floor(currentProfit)}!<br>วินัยไม่มี ชีวิตจะพัง หยุดเล่นเดี๋ยวนี้!</div>`;
         }
     }
 
     function add(val) {
-        if (history.length >= 10 && bestId !== null) {
-            let pred = getPredict(history, bestId);
-            let bet = parseFloat(document.getElementById('next_bet').innerText);
-            if (pred === val) { currentProfit += bet; isLastWin = true; }
-            else { currentProfit -= bet; isLastWin = false; }
+        let chip = parseFloat(document.getElementById('chip').value) || 0;
+        let mainBet = isLastWin ? chip * 2 : chip;
+
+        if (dnaHistory.length >= 10 && bestId !== null) {
+            if (val === 'T') {
+                // ออกเสมอ (T): กำไรเน้นๆ จากที่วางเสมอ 50 * 8 = 400
+                currentProfit += (TIE_BET * 8); 
+                // ฝั่งสีปกติ (P/B) ได้คืน ไม่เสีย ไม่ได้กำไรเพิ่ม สถานะทบเงินคงเดิม
+            } else {
+                let pred = getPredict(dnaHistory, bestId);
+                if (pred === val) {
+                    currentProfit += (mainBet - TIE_BET); // ชนะฝั่งหลัก หักทุนเสมอ 50
+                    isLastWin = true;
+                } else {
+                    currentProfit -= (mainBet + TIE_BET); // เสียทั้งฝั่งหลักและเสมอ
+                    isLastWin = false;
+                }
+            }
         }
-        history.push(val);
+        
+        rawHistory.push(val);
+        if (val !== 'T') dnaHistory.push(val);
         update();
     }
 
-    function undo() { history.pop(); update(); }
-    function resetData() { history = []; bestId = null; update(); }
+    function undo() {
+        let last = rawHistory.pop();
+        if (last && last !== 'T') dnaHistory.pop();
+        update();
+    }
+
+    function resetData() { rawHistory = []; dnaHistory = []; bestId = null; update(); }
     function resetMoney() { currentProfit = 0; isLastWin = false; calc(); }
     function resetAll() { resetData(); resetMoney(); }
 
     function update() {
-        document.getElementById('view-hist').innerText = [...history].reverse().join(' ');
-        if (history.length >= 10) {
-            document.getElementById('msg').style.display = 'none';
+        document.getElementById('view-hist').innerText = [...rawHistory].reverse().join(' ');
+        if (dnaHistory.length >= 10) {
             findBest();
         } else {
-            document.getElementById('msg').style.display = 'block';
-            document.getElementById('msg').innerText = `รอสถิติอีก ${10 - history.length} ตา...`;
-            document.getElementById('dna-solo').innerHTML = '';
+            document.getElementById('dna-solo').innerHTML = `<div style="text-align:center; padding:20px; color:#ffcc00; font-weight:bold;">รอสถิติอีก ${10 - dnaHistory.length} ตา...</div>`;
         }
         calc();
     }
 
     function findBest() {
-        if (bestId !== null && getLoss(bestId) <= 2) {
-            // ใช้ชุดเดิมต่อไป
-        } else {
-            // ค้นหาชุดใหม่ที่ผิดน้อยที่สุด
-            let minL = 99;
-            for (let id = 1; id <= 256; id++) {
-                let l = getLoss(id);
-                if (l < minL) { minL = l; bestId = id; }
-                if (l === 0) break;
-            }
+        let minL = 99;
+        for (let id = 1; id <= 256; id++) {
+            let l = getLoss(id);
+            if (l < minL) { minL = l; bestId = id; }
+            if (l === 0) break;
         }
         render();
     }
 
     function getLoss(id) {
         let max = 0, cur = 0;
-        for (let j = 1; j < history.length; j++) {
-            let p = getPredict(history.slice(0, j), id);
-            if (p !== history[j]) { cur++; if(cur > max) max = cur; }
+        for (let j = 1; j < dnaHistory.length; j++) {
+            let p = getPredict(dnaHistory.slice(0, j), id);
+            if (p !== dnaHistory[j]) { cur++; if(cur > max) max = cur; }
             else cur = 0;
         }
         return max;
     }
 
     function render() {
-        if (bestId === null) return;
         let icons = [];
-        for (let j = 1; j < history.length; j++) {
-            icons.push(getPredict(history.slice(0, j), bestId) === history[j] ? "✅" : "❌");
+        for (let j = 1; j < dnaHistory.length; j++) {
+            icons.push(getPredict(dnaHistory.slice(0, j), bestId) === dnaHistory[j] ? "✅" : "❌");
         }
-        let next = getPredict(history, bestId);
+        let next = getPredict(dnaHistory, bestId);
         document.getElementById('dna-solo').innerHTML = `
             <div class="dna-card">
                 <div class="dna-header">
-                    <span style="font-size:0.8em; color:#fff; opacity:0.6;">BEST DNA SET #${bestId}</span>
+                    <span style="font-size:0.8em; color:#fff; opacity:0.7;">DNA STREAK MODE #${bestId}</span>
                     <span class="dna-next" style="color:${next==='P'?'#0062ff':'#e62e2e'}">${next}</span>
                 </div>
                 <div class="auto-check">${icons.reverse().map(i => `<span>${i}</span>`).join('')}</div>
