@@ -2,146 +2,216 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA TARGET - WIDE VIEW</title>
+    <title>BJ Pro Strategy - Push Update</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #050505; color: #e0e0e0; padding: 10px; margin: 0; }
-        .container { max-width: 420px; margin: auto; background: #151515; padding: 12px; border-radius: 15px; border: 1px solid #333; }
+        @import url('https://googleapis.com');
+        body { font-family: 'Kanit', sans-serif; background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: #2c3e50; padding: 20px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 95%; max-width: 500px; border: 2px solid #34495e; }
         
-        /* แถวกรอกข้อมูล */
-        .input-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 5px; margin-bottom: 12px; background: #222; padding: 8px; border-radius: 8px; }
-        .input-group { display: flex; flex-direction: column; }
-        label { font-size: 0.7em; color: #888; margin-bottom: 2px; text-align: center; }
-        input { width: 100%; padding: 8px 0; border-radius: 4px; border: 1px solid #333; background: #000; color: #fff; text-align: center; font-weight: bold; font-size: 1.1em; box-sizing: border-box; }
+        .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #34495e; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .config-grid div { display: flex; flex-direction: column; }
+        label { font-size: 0.8rem; color: #bdc3c7; margin-bottom: 4px; }
+        input { padding: 8px; border-radius: 6px; border: none; background: #ecf0f1; font-weight: bold; }
 
-        /* เป้าหมายกระพริบ */
-        @keyframes blink-win { 0%, 100% { opacity: 1; text-shadow: 0 0 15px #00ff88; } 50% { opacity: 0.4; } }
-        @keyframes blink-loss { 0%, 100% { opacity: 1; text-shadow: 0 0 15px #ff4444; } 50% { opacity: 0.4; } }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .alert-win { color: #2ecc71; font-size: 1.6rem; font-weight: bold; text-align: center; animation: blink 0.7s infinite; display: none; text-shadow: 0 0 10px #27ae60; margin: 10px 0; }
+        .alert-loss { color: #e74c3c; font-size: 1.6rem; font-weight: bold; text-align: center; animation: blink 0.7s infinite; display: none; text-shadow: 0 0 10px #c0392b; margin: 10px 0; }
 
-        .goal-display { background: #000; padding: 10px 5px; border-radius: 12px; border: 2px solid #333; margin-bottom: 15px; display: flex; align-items: stretch; }
-        .goal-item { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; }
-        .goal-divider { width: 1px; background: #333; margin: 0 5px; }
+        .play-area { background: #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 15px; text-align: center; border: 1px solid #7f8c8d; }
+        .advice-box { font-size: 1.8rem; font-weight: bold; margin: 10px 0; color: #f1c40f; min-height: 45px; }
+        .card-display { color: #bdc3c7; margin-bottom: 5px; }
+        .card-display span { color: white; font-size: 1.2rem; }
 
-        .top-box { border: 1px solid #333; border-radius: 8px; padding: 8px 2px; background: #0a0a0a; margin-bottom: 8px; }
-        .win-blink { color: #00ff88; font-weight: bold; font-size: 1.8em; animation: blink-win 1.2s infinite; }
-        .loss-blink { color: #ff4444; font-weight: bold; font-size: 1.8em; animation: blink-loss 1.2s infinite; }
-        .bottom-txt { font-size: 0.85em; color: #aaa; margin-top: 2px; }
-        .label-txt { font-size: 0.65em; color: #666; margin-bottom: 2px; }
+        .btn-num-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 15px; }
+        button { border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-num { padding: 12px 0; background: #ecf0f1; color: #2c3e50; font-size: 1.1rem; }
+        
+        /* ปุ่มผลลัพธ์ */
+        .result-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-win { background: #27ae60; color: white; padding: 15px; flex: 2; font-size: 1.1rem; }
+        .btn-loss { background: #c0392b; color: white; padding: 15px; flex: 2; font-size: 1.1rem; }
+        .btn-push { background: #f39c12; color: white; padding: 15px; flex: 1.5; font-size: 1.1rem; }
 
-        /* ประวัติการออก */
-        .history-row { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 12px; font-family: monospace; font-size: 1.4em; color: #fff; overflow-x: auto; white-space: nowrap; border: 1px solid #444; letter-spacing: 5px; display: flex; flex-direction: row-reverse; min-height: 30px;}
-
-        /* ปุ่มหลัก */
-        .main-btns { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 8px; margin-bottom: 12px; }
-        button { border: none; border-radius: 10px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-p { background: #0062ff; height: 60px; font-size: 2em; box-shadow: 0 4px #0046b3; }
-        .btn-b { background: #e62e2e; height: 60px; font-size: 2em; box-shadow: 0 4px #b31a1a; }
-        .btn-undo { background: #444; height: 60px; }
-        .btn-clear { background: #85144b; width: 100%; padding: 10px; border-radius: 10px; font-size: 1em; margin-bottom: 15px; }
-
-        /* DNA ย่อส่วนแบบใหม่ (ลบชื่อเซ็ตออก) */
-        .dna-card { background: #1e1e1e; margin-bottom: 4px; padding: 3px 10px; border-radius: 6px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
-        .dna-next { font-size: 1.8em; font-weight: bold; width: 35px; text-align: center; border-right: 1px solid #333; padding-right: 10px; margin-right: 5px; }
-        .auto-check { display: flex; overflow-x: auto; gap: 4px; font-size: 1.1em; direction: rtl; flex-grow: 1; }
-        .auto-check span { min-width: 16px; }
-
-        #msg { text-align: center; color: #ffcc00; margin: 15px 0; font-weight: bold; }
+        .btn-reset { background: #95a5a6; color: white; padding: 10px; width: 100%; margin-top: 10px; }
+        .bet-info { text-align: center; font-size: 1.1rem; margin-bottom: 15px; color: #f1c40f; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="input-row">
-        <div class="input-group"><label>ทุนต้น</label><input type="number" id="cap" value="10000" oninput="updateGoals()"></div>
-        <div class="input-group"><label>กำไร%</label><input type="number" id="pct_win" value="10" oninput="updateGoals()"></div>
-        <div class="input-group"><label>ขาดทุน%</label><input type="number" id="pct_loss" value="20" oninput="updateGoals()"></div>
-    </div>
+    <h2 style="text-align:center; margin: 0 0 15px 0;">Blackjack Manager</h2>
 
-    <div class="goal-display">
-        <div class="goal-item">
-            <div class="label-txt">เป้าหมายยอดถอน</div>
-            <div class="top-box"><div id="win-total" class="win-blink">11,000</div></div>
-            <div class="bottom-txt">กำไร: +<span id="win-goal">1,000</span></div>
+    <div class="config-grid">
+        <div>
+            <label>ทุนเริ่มต้น:</label>
+            <input type="number" id="capital" value="1000" oninput="updateStats()">
         </div>
-        <div class="goal-divider"></div>
-        <div class="goal-item">
-            <div class="label-txt">ลิมิตยอดหยุด</div>
-            <div class="top-box"><div id="loss-total" class="loss-blink">8,000</div></div>
-            <div class="bottom-txt">เสียได้: -<span id="loss-goal">2,000</span></div>
+        <div>
+            <label>ชิปเริ่มต้น (Bet):</label>
+            <input type="number" id="baseBet" value="50" oninput="updateStats()">
+        </div>
+        <div>
+            <label>เป้ากำไร (%):</label>
+            <input type="number" id="targetPer" value="20" oninput="updateStats()">
+        </div>
+        <div>
+            <label>เป้าเสีย/พัก (%):</label>
+            <input type="number" id="stopLossPer" value="30" oninput="updateStats()">
         </div>
     </div>
 
-    <div class="history-row" id="view-hist"></div>
+    <div id="winMsg" class="alert-win">💰 ครบเป้ากำไรแล้ว! 💰</div>
+    <div id="lossMsg" class="alert-loss">⚠️ ถึงจุดพัก/เสียเป้า! ⚠️</div>
 
-    <div class="main-btns">
-        <button class="btn-p" onclick="add('P')">P</button>
-        <button class="btn-b" onclick="add('B')">B</button>
-        <button class="btn-undo" onclick="undo()">Undo</button>
+    <div style="display:flex; justify-content: space-between; margin-bottom: 15px; padding: 0 10px;">
+        <span>กำไร/ขาดทุน: <b id="displayProfit">0</b></span>
+        <span>คงเหลือ: <b id="displayBalance">1,000</b></span>
     </div>
-    
-    <button class="btn-clear" onclick="clearData()">ล้างสถิติทั้งหมด</button>
 
-    <div id="msg">รอข้อมูลสถิติ 10 ตา...</div>
-    <div id="dna-list"></div>
+    <div class="bet-info">
+        ไม้นี้วางเดิมพัน: <span id="currentBet">50</span> บาท
+    </div>
+
+    <div class="play-area">
+        <div class="card-display">ดีลเลอร์: <span id="dCard">-</span></div>
+        <div class="card-display">มือคุณ: <span id="pCards">-</span></div>
+        <div class="advice-box" id="advice">รอไพ่ดีลเลอร์...</div>
+    </div>
+
+    <!-- ปุ่ม Win / Loss / Push -->
+    <div class="result-group">
+        <button class="btn-win" onclick="handleResult('win')">ชนะ</button>
+        <button class="btn-loss" onclick="handleResult('loss')">แพ้</button>
+        <button class="btn-push" onclick="handleResult('push')">เสมอ</button>
+    </div>
+
+    <div class="btn-num-grid">
+        <button class="btn-num" onclick="pressCard(1)">A</button>
+        <button class="btn-num" onclick="pressCard(2)">2</button>
+        <button class="btn-num" onclick="pressCard(3)">3</button>
+        <button class="btn-num" onclick="pressCard(4)">4</button>
+        <button class="btn-num" onclick="pressCard(5)">5</button>
+        <button class="btn-num" onclick="pressCard(6)">6</button>
+        <button class="btn-num" onclick="pressCard(7)">7</button>
+        <button class="btn-num" onclick="pressCard(8)">8</button>
+        <button class="btn-num" onclick="pressCard(9)">9</button>
+        <button class="btn-num" onclick="pressCard(10)">10</button>
+    </div>
+
+    <button class="btn-reset" onclick="resetSystem()">ล้างสถิติทั้งหมด</button>
 </div>
 
 <script>
-    let rawHistory = [];
-    const dnaStrategies = [0, 1, 2, 3, 4]; // 5 รูปแบบ
+    let cards = [];
+    let sessionProfit = 0;
 
-    function updateGoals() {
-        let cap = parseFloat(document.getElementById('cap').value) || 0;
-        let pWin = parseFloat(document.getElementById('pct_win').value) || 0;
-        let pLoss = parseFloat(document.getElementById('pct_loss').value) || 0;
-        let winAmt = Math.floor((cap * pWin) / 100);
-        let lossAmt = Math.floor((cap * pLoss) / 100);
-        document.getElementById('win-total').innerText = (cap + winAmt).toLocaleString();
-        document.getElementById('win-goal').innerText = winAmt.toLocaleString();
-        document.getElementById('loss-total').innerText = (cap - lossAmt).toLocaleString();
-        document.getElementById('loss-goal').innerText = lossAmt.toLocaleString();
+    function updateStats() {
+        const cap = parseFloat(document.getElementById('capital').value) || 0;
+        const bBet = parseFloat(document.getElementById('baseBet').value) || 0;
+        const tPer = parseFloat(document.getElementById('targetPer').value) || 0;
+        const sPer = parseFloat(document.getElementById('stopLossPer').value) || 0;
+
+        const targetVal = (cap * tPer) / 100;
+        const lossVal = -(cap * sPer) / 100;
+
+        document.getElementById('displayProfit').innerText = sessionProfit.toLocaleString();
+        document.getElementById('displayProfit').style.color = sessionProfit >= 0 ? (sessionProfit === 0 ? "white" : "#2ecc71") : "#e74c3c";
+        document.getElementById('displayBalance').innerText = (cap + sessionProfit).toLocaleString();
+        document.getElementById('currentBet').innerText = bBet.toLocaleString();
+
+        document.getElementById('winMsg').style.display = (sessionProfit >= targetVal && targetVal > 0) ? "block" : "none";
+        document.getElementById('lossMsg').style.display = (sessionProfit <= lossVal && lossVal !== 0) ? "block" : "none";
     }
 
-    function add(val) { rawHistory.push(val); updateUI(); }
-    function undo() { rawHistory.pop(); updateUI(); }
-    function clearData() { rawHistory = []; updateUI(); }
-
-    function getPredict(h, id) {
-        if (h.length < 1) return '-';
-        const last = h[h.length - 1];
-        const strats = [last, last === 'P' ? 'B' : 'P', h[h.length - 2] || last, h[h.length - 3] || last, h.length % 2 === 0 ? 'P' : 'B'];
-        return strats[id % 5];
+    function handleResult(res) {
+        const bet = parseFloat(document.getElementById('baseBet').value) || 0;
+        if (res === 'win') {
+            sessionProfit += bet;
+        } else if (res === 'loss') {
+            sessionProfit -= bet;
+        }
+        // กรณี 'push' จะไม่บวกหรือลบเงิน เพียงแค่เคลียร์ไพ่
+        
+        clearCards();
+        updateStats();
     }
 
-    function updateUI() {
-        document.getElementById('view-hist').innerText = [...rawHistory].reverse().join(' ');
-        if (rawHistory.length >= 10) {
-            document.getElementById('msg').style.display = 'none';
-            renderDNA();
-        } else {
-            document.getElementById('msg').style.display = 'block';
-            document.getElementById('msg').innerText = `รอข้อมูลอีก ${10 - rawHistory.length} ตา...`;
-            document.getElementById('dna-list').innerHTML = '';
+    function pressCard(n) {
+        cards.push(n);
+        renderGame();
+    }
+
+    function clearCards() {
+        cards = [];
+        renderGame();
+    }
+
+    function resetSystem() {
+        if(confirm("ล้างสถิติและกำไรทั้งหมด?")) {
+            sessionProfit = 0;
+            clearCards();
+            updateStats();
         }
     }
 
-    function renderDNA() {
-        let html = '';
-        dnaStrategies.forEach((id) => {
-            let icons = [];
-            for (let j = 1; j < rawHistory.length; j++) {
-                icons.push(getPredict(rawHistory.slice(0, j), id) === rawHistory[j] ? "✅" : "❌");
-            }
-            let next = getPredict(rawHistory, id);
-            html += `
-                <div class="dna-card">
-                    <div class="dna-next" style="color:${next === 'P' ? '#0062ff' : '#e62e2e'}">${next}</div>
-                    <div class="auto-check">${icons.reverse().map(i => `<span>${i}</span>`).join('')}</div>
-                </div>`;
-        });
-        document.getElementById('dna-list').innerHTML = html;
-    }
-    updateGoals();
-</script>
+    function renderGame() {
+        const dSpan = document.getElementById('dCard');
+        const pSpan = document.getElementById('pCards');
+        const adv = document.getElementById('advice');
 
+        if (cards.length === 0) {
+            dSpan.innerText = "-"; pSpan.innerText = "-";
+            adv.innerText = "รอไพ่ดีลเลอร์...";
+            return;
+        }
+
+        const d = cards[0];
+        const pHand = cards.slice(1);
+        dSpan.innerText = d === 1 ? "A" : d;
+        pSpan.innerText = pHand.length > 0 ? pHand.map(x => x === 1 ? "A" : x).join(', ') : "-";
+
+        if (cards.length < 3) {
+            adv.innerText = "ลงไพ่เพเยอร์...";
+            return;
+        }
+
+        adv.innerText = getBasicStrategy(d, pHand);
+    }
+
+    function getBasicStrategy(d, pHand) {
+        // ใช้ค่าไพ่ (Ace ในการคำนวณแต้มรวมทั่วไปให้เป็น 1 ก่อน)
+        const hardSum = pHand.reduce((a, b) => a + b, 0);
+        const hasAce = pHand.includes(1);
+        const isPair = pHand.length === 2 && pHand[0] === pHand[1];
+
+        if (isPair && pHand.length === 2) {
+            const val = pHand[0];
+            if (val === 1 || val === 8) return "แยก (SPLIT)";
+            if ((val === 2 || val === 3 || val === 7) && d <= 7) return "แยก (SPLIT)";
+            if (val === 6 && d <= 6) return "แยก (SPLIT)";
+            if (val === 4 && (d === 5 || d === 6)) return "แยก (SPLIT)";
+            if (val === 9 && (d <= 6 || d === 8 || d === 9)) return "แยก (SPLIT)";
+        }
+
+        if (hasAce && hardSum <= 11) {
+            const softSum = hardSum + 10;
+            if (softSum >= 19) return "อยู่ (STAND)";
+            if (softSum === 18) return d <= 6 ? "ดับเบิ้ล / อยู่" : "อยู่ (STAND)";
+            if (softSum === 17) return (d >= 3 && d <= 6) ? "ดับเบิ้ล / จั่ว" : "จั่ว (HIT)";
+            return "จั่ว (HIT)";
+        }
+
+        if (hardSum >= 17) return "อยู่ (STAND)";
+        if (hardSum >= 13 && hardSum <= 16) return d <= 6 ? "อยู่ (STAND)" : "จั่ว (HIT)";
+        if (hardSum === 12) return (d >= 4 && d <= 6) ? "อยู่ (STAND)" : "จั่ว (HIT)";
+        if (hardSum === 11) return "ดับเบิ้ล (DOUBLE)";
+        if (hardSum === 10) return d <= 9 ? "ดับเบิ้ล (DOUBLE)" : "จั่ว (HIT)";
+        if (hardSum === 9) return (d >= 3 && d <= 6) ? "ดับเบิ้ล (DOUBLE)" : "จั่ว (HIT)";
+
+        return "จั่ว (HIT)";
+    }
+
+    updateStats();
+</script>
 </body>
 </html>
